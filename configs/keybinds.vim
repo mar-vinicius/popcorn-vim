@@ -43,53 +43,74 @@ vnoremap p "+p
 
 
 """ FILE COMMANDS
-fun! VerifyDelete()
-	let l:message = Confirm('You are sure(y/n)?: ')
-
+fun! VerifyDelete(file)
+	if a:file != "" && filereadable("SpecificFile")
+		let l:message = Confirm('Are you sure you want to delete the "' . a:file . '" file? (Y/N): ')
+	else
+		echom "No file to delete or file not exists"
+		return
+	endif
+	
 	if l:message ==? 1
 		exe "!rm %"
 		call feedkeys(":bw\<cr>")
 		call feedkeys(" ")
 	elseif l:message ==? 0
-		echom "Aborting..."
+		echom "Aborted"
 		call feedkeys(" ")
 	endif
+endfun
 
+fun! FileClose(file)
+	if a:file != ""
+		let l:message = Confirm('Are you sure you want to close the "' . a:file . '" file? (Y/N): ')
+	else
+		echom "No files to close"
+		return
+	endif
+
+	if l:message ==? 1
+		exe "bw"
+		echom " "
+	elseif l:message ==? 0
+		echom "Aborted"
+		call feedkeys(" ")
+	endif
 endfun
 
 " File save
 nnoremap <Leader>fs :w<cr>
 
 " File exit
-nnoremap <Leader>fe :bw<cr>
+nnoremap <Leader>fc :call FileClose(expand('%:t'))<cr>
 
 " Delete file
-nnoremap <Leader>fd :call VerifyDelete()<cr>
+nnoremap <Leader>fd :call VerifyDelete(expand('%:t'))<cr>
+
+" Show NERDTree
+nnoremap <Leader>oe :NERDTreeToggle<cr>
 """
 
 
 """ GENERAL COMMANDS FOR VIM
-fun! VerifyExit()
-	let l:message = Confirm('You are sure(y/n)?: ')
+fun! VerifyExit(file)
+	let l:message = Confirm('Are you sure you want to quit Popcorn Vim? (Y/N): ')
 
 	if l:message ==? 1
 		exe "q!"
 	elseif l:message ==? 0
-		echom "Aborting..."
+		echom "Aborted"
 		call feedkeys(" ")
 	endif
 endfun
 
 " Exit neovim
-nnoremap <Leader>qq :call VerifyExit()<cr>
+nnoremap <Leader>qq :call VerifyExit(expand('%:t'))<cr>
 
 " New esc
 nnoremap <Esc> :noh<cr>
 
 " Vim Indent Lines
-
-map <C-p> :IndentGuidesDisable<cr>
-map <C-k> :IndentGuidesEnable<cr>
+map <silent><C-p> :IndentGuidesDisable<cr>
+map <silent><C-k> :IndentGuidesEnable<cr>
 """
-
-

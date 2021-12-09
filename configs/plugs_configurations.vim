@@ -43,6 +43,11 @@ let g:airline_symbols.dirty='⚡'
 
 "}}}}}} CONFIGURAÇÕES DE DASHBOARD
 let g:dashboard_custom_header = [
+	\'',
+	\'',
+	\'',
+	\'',
+	\'',
 	\' @@@@@@@    @@@@@@   @@@@@@@    @@@@@@@   @@@@@@   @@@@@@@   @@@  @@@     @@@  @@@  @@@  @@@@@@@@@@  ', 
 	\' @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@@ @@@     @@@  @@@  @@@  @@@@@@@@@@@ ', 
 	\' @@!  @@@  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@@  @@!@!@@@     @@!  @@@  @@!  @@! @@! @@! ', 
@@ -78,10 +83,11 @@ let g:dashboard_custom_section={
 
 "}}}}}} CONFIGURAÇÕES DE FINDR
 let g:findr_border = {
-    \   'top':    ['@', '~', '@'],
+    \   'top':    ['┌', '─', '┐'],
     \   'middle': ['│', ' ', '│'],
-    \   'bottom': ['@', '~', '@'],
+    \   'bottom': ['└', '─', '┘'],
     \ }
+let g:findr_shorten_path = 1
 "{{{{{{
 
 
@@ -107,20 +113,36 @@ function! TabIsEmpty()
     endif
 endfunction
 
+fun! DashboardCorrect()
+	call feedkeys("\<C-p>")
+	exe "Dashboard"
+endfun
+
+fun! EmptyBuffer()
+	let l:empty_buffer = line2byte('.') == -1 && len(tabpagebuflist()) == 1 && empty(bufname())
+	if l:empty_buffer
+		call DashboardCorrect()
+	endif
+endfun
+
 fun! IdentManager()
 	if TabIsEmpty() == 1
-		call feedkeys("\<C-p>")
-		exe "Dashboard"
+		call DashboardCorrect()
 	else
 		call feedkeys("\<C-k>")
 	endif
 endfun
 
-fun! DashboardCorrect()
-	exe "Dashboard"
-	call feedkeys("\<C-p>")
-endfun
+autocmd VimEnter * call IdentManager()
+autocmd BufReadPost * call IdentManager()
+autocmd BufEnter * call EmptyBuffer()
+"{{{{{{
 
-autocmd BufRead * call IdentManager()
-autocmd BufEnter * if line2byte('.') == -1 && len(tabpagebuflist()) == 1 && empty(bufname()) | call DashboardCorrect() | endif
+"}}}}}} CONFIGURAÇÕES DE VIMSENSE
+let g:vimsence_small_text = 'NeoVim'
+let g:vimsence_small_image = 'neovim'
+let g:vimsence_editing_details = 'Editing: {}'
+let g:vimsence_editing_state = 'Working on: {}'
+let g:vimsence_file_explorer_text = 'In NERDTree'
+let g:vimsence_file_explorer_details = 'Looking for files'
 "{{{{{{

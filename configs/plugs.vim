@@ -1,5 +1,5 @@
 call plug#begin()
-Plug 'andweeb/presence.nvim'
+Plug 'vimsence/vimsence'
 Plug 'conweller/findr.vim'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'glepnir/dashboard-nvim'
